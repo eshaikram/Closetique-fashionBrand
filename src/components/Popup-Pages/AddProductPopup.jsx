@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axiosInstance from "@/lib/axiosInstance";
+import { CldUploadButton } from "next-cloudinary";
 
 const AddProductPopup = ({ onClose, onProductAdded }) => {
   const [title, setTitle] = useState("");
@@ -12,32 +13,44 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
   const [brand, setBrand] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
   const [status, setStatus] = useState("In Stock");
-  const [images, setImages] = useState([null]);
+  const [images, setImages] = useState([]); // Store Cloudinary URLs
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'success' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosInstance.post('/products', {
-        title,
-        description,
-        stuff,
-        price,
-        productName,
-        category,
-        brand,
-        stockQuantity,
-        status,
-        images,
+
+    // Validate stockQuantity
+    if (!stockQuantity || isNaN(stockQuantity) || stockQuantity === "") {
+      setSnackbar({
+        open: true,
+        message: "Please enter a valid stock quantity",
+        type: "error",
       });
-      
+      return;
+    }
+
+    const payload = {
+      title,
+      description,
+      stuff,
+      price: Number(price),
+      productName,
+      category,
+      brand,
+      countInStock: Number(stockQuantity),
+      status,
+      images, // Array of Cloudinary URLs
+      gender: category.includes("Ladies") ? "women" : "men",
+    };
+
+    try {
+      const response = await axiosInstance.post("/products", payload);
       setSnackbar({
         open: true,
         message: response.data.message,
-        type: 'success'
+        type: "success",
       });
-      
       onProductAdded(response.data.product);
       setTimeout(() => {
         onClose();
@@ -45,27 +58,21 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
     } catch (error) {
       setSnackbar({
         open: true,
-        message: error.message || 'Failed to add product',
-        type: 'error'
+        message: error.response?.data?.message || "Failed to add product",
+        type: "error",
       });
     }
   };
 
-  const handleImageChange = (index, event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const newImages = [...images];
-        newImages[index] = reader.result;
-        setImages(newImages);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // Handle Cloudinary upload
+ const handleImageUpload = (result) => {
+  const publicId = result.info.public_id; // Get public ID instead of full URL
+  setImages((prev) => [...prev, publicId]);
+};
+
 
   const addImageSlot = () => {
-    setImages([...images, null]);
+    // No need for null slots; images are added via uploads
   };
 
   const nextImage = () => {
@@ -85,8 +92,8 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
       <div
         className="bg-white rounded-2xl shadow-2xl w-11/12 max-w-6xl max-h-[90vh] overflow-y-auto relative text-gray-900 transform transition-all duration-300"
         style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         <style jsx>{`
@@ -149,33 +156,26 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
                   Pictures
                 </h3>
                 <div className="flex gap-4 flex-wrap">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative group">
-                      {img ? (
-                        <img
-                          src={img}
-                          alt={`Product ${index + 1}`}
-                          className="w-24 h-24 object-cover rounded-lg shadow-md transition-transform duration-200 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
-                          No Image
-                        </div>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageChange(index, e)}
-                        className="w-24 mt-2 text-xs text-gray-600 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200 cursor-pointer"
-                      />
-                    </div>
-                  ))}
-                  <button
-                    onClick={addImageSlot}
+                  <CldUploadButton
+                    uploadPreset="my_unsigned_preset" // Replace with your preset
+                    onSuccess={handleImageUpload}
+                    options={{
+                      folder: `${category || "products"}/${brand || "unknown"}`,
+                      resource_type: "image",
+                    }}
                     className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 text-2xl cursor-pointer hover:bg-gray-50 transition-colors duration-200"
                   >
                     +
-                  </button>
+                  </CldUploadButton>
+                  {images.map((img, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={img}
+                        alt={`Product ${index + 1}`}
+                        className="w-24 h-24 object-cover rounded-lg shadow-md transition-transform duration-200 group-hover:scale-105"
+                      />
+                    </div>
+                  ))}
                 </div>
               </section>
 
@@ -275,7 +275,7 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
                           <div
                             key={index}
                             className={`w-2 h-2 rounded-full ${
-                              index === currentImageIndex ? 'bg-orange-500' : 'bg-gray-300'
+                              index === currentImageIndex ? "bg-orange-500" : "bg-gray-300"
                             }`}
                           />
                         ))}
@@ -290,17 +290,38 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
                   ${price || "Price"}
                 </p>
                 <div className="text-sm text-gray-600 space-y-2 text-left bg-white/50 p-4 rounded-lg shadow-sm">
-                  <p><strong>Title:</strong> {title || "Title"}</p>
-                  <p><strong>Description:</strong> {description || "Description"}</p>
-                  <p><strong>Stuff:</strong> {stuff || "Material"}</p>
-                  <p><strong>Category:</strong> {category || "Category"}</p>
-                  <p><strong>Brand:</strong> {brand || "Brand"}</p>
-                  <p><strong>Stock:</strong> {stockQuantity || "Quantity"}</p>
-                  <p><strong>Status:</strong> <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                    status === 'In Stock' ? 'bg-green-100 text-green-800' :
-                    status === 'Low Stock' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>{status}</span></p>
+                  <p>
+                    <strong>Title:</strong> {title || "Title"}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {description || "Description"}
+                  </p>
+                  <p>
+                    <strong>Stuff:</strong> {stuff || "Material"}
+                  </p>
+                  <p>
+                    <strong>Category:</strong> {category || "Category"}
+                  </p>
+                  <p>
+                    <strong>Brand:</strong> {brand || "Brand"}
+                  </p>
+                  <p>
+                    <strong>Stock:</strong> {stockQuantity || "Quantity"}
+                  </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`inline-block px-2 py-1 rounded-full text-xs ${
+                        status === "In Stock"
+                          ? "bg-green-100 text-green-800"
+                          : status === "Low Stock"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {status}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -335,14 +356,13 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
 
         {/* Snackbar */}
         {snackbar.open && (
-          <div className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${
-            snackbar.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-          }`}>
+          <div
+            className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${
+              snackbar.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
             {snackbar.message}
-            <button
-              onClick={handleSnackbarClose}
-              className="ml-4 text-white font-bold"
-            >
+            <button onClick={handleSnackbarClose} className="ml-4 text-white font-bold">
               ×
             </button>
           </div>

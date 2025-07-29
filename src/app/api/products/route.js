@@ -1,12 +1,11 @@
 import mongoose from 'mongoose';
 import Product from '@/models/Product';
 import dbConnect  from '@/lib/db';
-
 export async function POST(req) {
   try {
     await dbConnect();
     const data = await req.json();
-    
+    console.log('Incoming data.status:', data.status); // Debug log
     const product = new Product({
       title: data.title,
       description: data.description,
@@ -15,14 +14,14 @@ export async function POST(req) {
       productName: data.productName,
       category: data.category,
       brand: data.brand,
-      countInStock: parseInt(data.stockQuantity),
-      status: data.status,
+    countInStock: data.countInStock,
+      status: data.status || 'In Stock', // Fallback to default if undefined
       images: data.images.filter(img => img !== null),
       gender: data.category.includes('Ladies') ? 'women' : 'men',
     });
 
     await product.save();
-    
+    console.log('Saved product:', product); // Debug log
     return new Response(JSON.stringify({ 
       message: 'Product added successfully',
       product 
@@ -31,6 +30,7 @@ export async function POST(req) {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
+    console.error('Error:', error);
     return new Response(JSON.stringify({ 
       message: 'Error adding product',
       error: error.message 
@@ -43,9 +43,11 @@ export async function POST(req) {
 
 export async function GET() {
   try {
+      console.time("⏱ MongoDB Fetch Time");
     await dbConnect();
     const products = await Product.find({}).sort({ createdAt: -1 });
     
+console.timeEnd("⏱ MongoDB Fetch Time");
     return new Response(JSON.stringify(products), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
