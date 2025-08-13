@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Navbar from './navbar/Navbar';
 import Footer from './footer/footer';
+import NavbarUser from './header/User-Navbar';
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -15,7 +15,7 @@ export default function LayoutWrapper({ children }) {
 
   return (
     <>
-      {!hideLayout && <Navbar />}
+      {!hideLayout && <NavbarUser />}
       <main className="min-h-screen">{children}</main>
       {!hideLayout && <Footer />}
     </>

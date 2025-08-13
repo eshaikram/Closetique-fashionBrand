@@ -4,10 +4,10 @@ const Logo = () => (
   <svg 
     width="100%"
     height="auto"
-    viewBox="0 0 220 70" // Maintain original proportions
+    viewBox="0 0 220 70"
     xmlns="http://www.w3.org/2000/svg"
-    className="w-full h-auto max-w-[150px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] mt-2" // Responsive widths
-    preserveAspectRatio="xMidYMid meet" // Ensure proper scaling
+    className="w-full h-auto max-w-[150px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] mt-2"
+    preserveAspectRatio="xMidYMid meet"
   >
     <defs>
       <linearGradient id="eGradient" x1="0" y1="0" x2="1" y2="1">
@@ -15,6 +15,9 @@ const Logo = () => (
         <stop offset="100%" stopColor="#FF6A00" />
       </linearGradient>
     </defs>
+
+    {/* Black background rectangle */}
+    <rect x="0" y="0" width="220" height="70" fill="#000" />
 
     <path 
       d="

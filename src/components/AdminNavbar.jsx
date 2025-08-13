@@ -1,7 +1,7 @@
 'use client';
 
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import ProfileDropdown from "./navbar/ProfileDropdown";
+import ProfileDropdown from "./header/ProfileDropdown";
 import { usePathname } from "next/navigation";
 
 const pageTitles = {

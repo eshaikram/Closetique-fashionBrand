@@ -4,14 +4,14 @@ import React from 'react';
 import FeaturedSection from '@/components/HomePage/FeaturedSection';
 import CategorySection from '@/components/HomePage/CategorySection';
 import TrendingSection from '@/components/HomePage/TrendingSection';
-import HeroSlider from '@/components/HomePage/HeroSlider';
+
+import HeroSection from '@/components/HomePage/HeroSection';
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <HeroSlider />
-      <h1 className="text-3xl font-bold mb-6 text-center">Welcome to Our Clothing Store</h1>
-
+    <main className="py-2 px-2">
+      <HeroSection />
+     
       <section className="mb-12">
         <h2 className="text-2xl ml-5 font-bold mb-6">Featured Products</h2>
         <FeaturedSection />
