@@ -24,7 +24,7 @@ function MainContent({ children }) {
     <div className="flex flex-col flex-1 min-h-screen">
       <AdminNavbar />
       <main
-        className={`flex-1 p-4 bg-gray-100 transition-all duration-300 ${
+        className={`flex-1 p-3 bg-gray-100 transition-all duration-300 ${
           isMobile ? '' : (open ? 'md:ml-64' : 'md:ml-0')
         }`}
       >

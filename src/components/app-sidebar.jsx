@@ -29,7 +29,7 @@ const items = [
     url: null, // No direct navigation
     icon: Calendar,
     subItems: [
-      { title: 'Product List', url: '/admin/products' }, // Products page
+      { title: 'Product List', url: '/admin/products' }, 
       { title: 'Product Card', url: '/admin/products/card' },
       { title: 'Product Details', url: '/admin/products/details' },
     ],
@@ -52,70 +52,85 @@ export function AppSidebar() {
     <Sidebar className="!bg-gradient-to-b from-orange-600 to-orange-400 text-white min-h-screen rounded-r-2xl shadow-2xl">
       <SidebarContent className="!bg-gradient-to-b from-orange-600 to-orange-400 p-2">
         <SidebarGroup>
-          <div className='mb-8'>
+          <div className="mb-8">
             <Link href="/">
               <LogoAdmin />
             </Link>
           </div>
-          
+
           <SidebarGroupContent>
             <SidebarMenu className="space-y-3">
-              {items.map((item) => {
-                const isActive = item.subItems && item.subItems.some(sub => pathname === sub.url);
-                const isExpanded = isOpen[item.title] || false;
+             {items.map((item) => {
+  const isActive = item.subItems && item.subItems.some((sub) => pathname === sub.url) || pathname === item.url;
+  const isExpanded = isOpen[item.title] || false;
 
-                return (
-                  <div key={item.title}>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        onClick={() => item.subItems && toggleOpen(item.title)}
-                        className={item.url ? '' : 'cursor-pointer'} // Non-navigable cursor
-                      >
-                        <div
-                          className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300
-                            ${
-                              isActive
-                                ? 'bg-white/90 text-orange-700 shadow-md'
-                                : 'text-white hover:bg-white/20 hover:shadow-lg'
-                            }`}
-                        >
-                          <item.icon
-                            className={`w-6 h-6 ${
-                              isActive ? 'text-orange-700' : 'text-white'
-                            }`}
-                          />
-                          <span className="font-semibold text-lg flex-1">{item.title}</span>
-                          {item.subItems && (
-                            <span>{isExpanded ? '▼' : '▶'}</span>
-                          )}
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    {item.subItems && isExpanded && (
-                      <div className="ml-8 space-y-2 mt-2">
-                        {item.subItems.map((subItem) => (
-                          <SidebarMenuItem key={subItem.title}>
-                            <SidebarMenuButton asChild>
-                              <Link
-                                href={subItem.url}
-                                className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300
-                                  ${
-                                    pathname === subItem.url
-                                      ? 'bg-white/90 text-orange-700 shadow-md'
-                                      : 'text-white hover:bg-white/20 hover:shadow-lg'
-                                  }`}
-                              >
-                                <span className="font-semibold text-md">{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+  return (
+    <div key={item.title}>
+      <SidebarMenuItem>
+        {item.url ? (
+          // If item has a URL → wrap with Link
+          <SidebarMenuButton asChild>
+            <Link
+              href={item.url}
+              className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 cursor-pointer
+                ${
+                  isActive
+                    ? 'bg-white/90 text-orange-700 shadow-md'
+                    : 'text-white hover:bg-white/20 hover:shadow-lg'
+                }`}
+            >
+              <item.icon
+                className={`w-6 h-6 ${isActive ? 'text-orange-700' : 'text-white'}`}
+              />
+              <span className="font-semibold text-lg flex-1">{item.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        ) : (
+          // If item has subItems → toggle open/close
+          <SidebarMenuButton
+            onClick={() => toggleOpen(item.title)}
+            className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 cursor-pointer
+              ${
+                isActive
+                  ? 'bg-white/90 text-orange-700 shadow-md'
+                  : 'text-white hover:bg-white/20 hover:shadow-lg'
+              }`}
+          >
+            <item.icon
+              className={`w-6 h-6 ${isActive ? 'text-orange-700' : 'text-white'}`}
+            />
+            <span className="font-semibold text-lg flex-1">{item.title}</span>
+            <span>{isExpanded ? '▼' : '▶'}</span>
+          </SidebarMenuButton>
+        )}
+      </SidebarMenuItem>
+
+      {/* Render Sub Items */}
+      {item.subItems && isExpanded && (
+        <div className="ml-8 space-y-2 mt-2">
+          {item.subItems.map((subItem) => (
+            <SidebarMenuItem key={subItem.title}>
+              <SidebarMenuButton asChild>
+                <Link
+                  href={subItem.url}
+                  className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 cursor-pointer
+                    ${
+                      pathname === subItem.url
+                        ? 'bg-white/90 text-orange-700 shadow-md'
+                        : 'text-white hover:bg-white/20 hover:shadow-lg'
+                    }`}
+                >
+                  <span className="font-semibold text-md">{subItem.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+})}
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

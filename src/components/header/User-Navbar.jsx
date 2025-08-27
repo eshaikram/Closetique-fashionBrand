@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import {
   FaSearch,
@@ -13,12 +14,18 @@ import {
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import LogoAdmin from '../Icons/logoAdmin';
 import ProfileDropdown from './ProfileDropdown';
-import Logo from '../Icons/logo';
+import Link from 'next/link';
+import { useCart } from '@/lib/CartContext'; // Import useCart
 
 const NavbarUser = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [wishlistCount] = useState(2); // Mock, replace later with API
+  const { cartItems } = useCart(); // Get cartItems from CartContext
+
+  // Calculate cart count from cartItems
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     if (isMobileMenuOpen || isSearchOpen) {
@@ -30,7 +37,7 @@ const NavbarUser = () => {
 
   const toggleSearch = () => {
     setIsSearchOpen((prev) => !prev);
-    setIsMobileMenuOpen(false); // Close mobile menu if search is opened
+    setIsMobileMenuOpen(false);
   };
 
   const handleSearch = (e) => {
@@ -58,7 +65,7 @@ const NavbarUser = () => {
           <span className="font-bold">830</span> Days
           <span className="font-bold"> 18</span> Hours
           <span className="font-bold"> 55</span> Minutes
-          <span className="font-bold"> 3</span> Sec.
+          <span className="font-strand"> 3</span> Sec.
         </div>
         <div className="hidden lg:flex items-center gap-4 flex-wrap">
           <div className="hidden md:flex">
@@ -104,22 +111,24 @@ const NavbarUser = () => {
           </button>
         </div>
         <div className="flex items-center gap-4 text-gray-700">
-         <button className="block md:hidden" onClick={toggleSearch}>
-    <FaSearch className="w-5 h-5" />
-  </button>
-  <div className="md:hidden">
-    <ProfileDropdown
-      icon={<FaUser className="w-5 h-5 text-gray-700" />}
-      setIsMobileMenuOpen={setIsMobileMenuOpen}
-    />
-  </div>
-  <div className="hidden md:flex items-center gap-1 cursor-pointer">
-    <ProfileDropdown
-      icon={<FaUser className="w-5 h-5 text-gray-700" />}
-      setIsMobileMenuOpen={setIsMobileMenuOpen}
-    />
-    <span>Profile</span>
-  </div>
+          <button className="block md:hidden" onClick={toggleSearch}>
+            <FaSearch className="w-5 h-5" />
+          </button>
+          <div className="md:hidden">
+            <ProfileDropdown
+              icon={<FaUser className="w-5 h-5 text-gray-700" />}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
+          </div>
+          <div className="hidden md:flex items-center gap-1 cursor-pointer">
+            <ProfileDropdown
+              icon={<FaUser className="w-5 h-5 text-gray-700" />}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
+            <span>Profile</span>
+          </div>
+
+          {/* Wishlist */}
           <div className="relative flex items-center cursor-pointer">
             <div className="hidden md:flex items-center gap-1">
               <FaHeart className="w-5 h-5" />
@@ -128,22 +137,31 @@ const NavbarUser = () => {
             <div className="md:hidden">
               <FaHeart className="w-5 h-5" />
             </div>
-            <span className="text-white bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center absolute -top-2 -right-3">
-              2
-            </span>
+            {wishlistCount > 0 && (
+              <span className="text-white bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center absolute -top-2 -right-3">
+                {wishlistCount}
+              </span>
+            )}
           </div>
-          <div className="relative flex items-center cursor-pointer">
-            <div className="hidden md:flex items-center gap-1">
-              <FaShoppingCart className="w-5 h-5" />
-              <span>Cart</span>
+
+          {/* Cart */}
+          <Link href="/Cart">
+            <div className="relative flex items-center cursor-pointer">
+              <div className="hidden md:flex items-center gap-1">
+                <FaShoppingCart className="w-5 h-5" />
+                <span>Cart</span>
+              </div>
+              <div className="md:hidden">
+                
+                <FaShoppingCart className="w-5 h-5" />
+              </div>
+              {cartCount > 0 && (
+                <span className="text-white bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center absolute -top-2 -right-3">
+                  {cartCount}
+                </span>
+              )}
             </div>
-            <div className="md:hidden">
-              <FaShoppingCart className="w-5 h-5" />
-            </div>
-            <span className="text-white bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center absolute -top-2 -right-3">
-              2
-            </span>
-          </div>
+       </Link>
         </div>
       </div>
 
@@ -216,7 +234,11 @@ const NavbarUser = () => {
           Browse Collection
         </button>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+          {isMobileMenuOpen ? (
+            <FaTimes className="w-6 h-6" />
+          ) : (
+            <FaBars className="w-6 h-6" />
+          )}
         </button>
       </div>
 
@@ -233,9 +255,7 @@ const NavbarUser = () => {
               zIndex: 10,
             }}
           ></div>
-          <div
-            className="fixed top-0 left-0 w-64 h-full bg-white z-20 px-6 py-6 shadow-lg transition-transform duration-300 ease-in-out transform translate-x-0"
-          >
+          <div className="fixed top-0 left-0 w-64 h-full bg-white z-20 px-6 py-6 shadow-lg transition-transform duration-300 ease-in-out transform translate-x-0">
             <button
               className="absolute top-4 right-4 text-primary hover:text-primary border rounded-full p-1 bg-gray-200"
               onClick={() => setIsMobileMenuOpen(false)}

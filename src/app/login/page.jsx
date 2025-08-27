@@ -77,8 +77,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-300 to-orange-500 p-4">
-      <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-300 to-orange-400 p-4">
+      <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white  border border-orange-200 rounded-xl shadow-2xl overflow-hidden">
         <div className="bg-primary text-white flex flex-col justify-center items-center md:w-1/2 p-10 space-y-6">
           <h2 className="text-4xl font-extrabold text-center">Welcome Back!</h2>
           <p className="text-center text-base max-w-md">
