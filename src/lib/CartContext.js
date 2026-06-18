@@ -1,64 +1,65 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axiosInstance from "./axiosInstance";
-import { Snackbar } from "@mui/material";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const [toast, setToast] = useState({ show: false, message: "" });
 
-  // Load cart from backend on mount
+  // Load cart from backend on mount (non-blocking).
   useEffect(() => {
-    const fetchCart = async () => {
+    let active = true;
+    (async () => {
       try {
         const res = await axiosInstance.get("/cart");
-        if (res.data.success) setCartItems(res.data.cart);
+        if (active && res.data.success) setCartItems(res.data.cart);
       } catch (err) {
         console.error("Error loading cart:", err.message);
       }
+    })();
+    return () => {
+      active = false;
     };
-    fetchCart();
   }, []);
 
-  const showSnackbar = (message) => {
-    setSnackbar({ open: true, message });
-    setTimeout(() => setSnackbar({ open: false, message: "" }), 3000);
-  };
+  const showToast = useCallback((message) => {
+    setToast({ show: true, message });
+    setTimeout(() => setToast({ show: false, message: "" }), 2500);
+  }, []);
 
-const addToCart = async (item) => {
-  try {
-    const res = await axiosInstance.post("/cart", item);
-    if (res.data.success) {
-      setCartItems((prev) => {
-        const existingIndex = prev.findIndex(
-          (i) => i.id === item.id && i.color === item.color
-        );
-
-        if (existingIndex > -1) {
-          const updated = [...prev];
-          updated[existingIndex].quantity += item.quantity;
-          return updated;
-        }
-        return [...prev, item];
-      });
-
-      showSnackbar("Item added to cart 🛒");
+  const addToCart = async (item) => {
+    try {
+      const res = await axiosInstance.post("/cart", item);
+      if (res.data.success) {
+        setCartItems((prev) => {
+          const existingIndex = prev.findIndex(
+            (i) => i.id === item.id && i.color === item.color
+          );
+          if (existingIndex > -1) {
+            const updated = [...prev];
+            updated[existingIndex] = {
+              ...updated[existingIndex],
+              quantity: updated[existingIndex].quantity + item.quantity,
+            };
+            return updated;
+          }
+          return [...prev, item];
+        });
+        showToast("Item added to cart 🛒");
+      }
+    } catch (err) {
+      console.error("Add to cart error:", err.message);
     }
-  } catch (err) {
-    console.error("Add to cart error:", err.message);
-  }
-};
-
-
+  };
 
   const deleteFromCart = async (id, color) => {
     try {
       const res = await axiosInstance.delete("/cart", { params: { id, color } });
       if (res.data.success) {
         setCartItems(res.data.cart);
-        showSnackbar("Item removed ❌");
+        showToast("Item removed ❌");
       }
     } catch (err) {
       console.error("Delete cart error:", err.message);
@@ -70,7 +71,7 @@ const addToCart = async (item) => {
       const res = await axiosInstance.patch("/cart", { action: "clear" });
       if (res.data.success) {
         setCartItems([]);
-        showSnackbar("Cart cleared 🗑️");
+        showToast("Cart cleared 🗑️");
       }
     } catch (err) {
       console.error("Clear cart error:", err.message);
@@ -80,11 +81,20 @@ const addToCart = async (item) => {
   return (
     <CartContext.Provider value={{ cartItems, addToCart, deleteFromCart, clearCart }}>
       {children}
-      <Snackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      />
+
+      {/* Lightweight toast (replaces MUI Snackbar to keep the global bundle small) */}
+      <div
+        aria-live="polite"
+        className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 ${
+          toast.show
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
+        <div className="bg-gray-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-lg">
+          {toast.message}
+        </div>
+      </div>
     </CartContext.Provider>
   );
 };

@@ -7,46 +7,42 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
+// Curated fashion categories with reliable Unsplash imagery.
+// CategoryCard gracefully falls back to a branded tile if an image fails.
 const categories = [
-  { title: "Men", image: "https://images.unsplash.com/photo-1593032465173-37b3822c9733" },
-  { title: "Women", image: "https://images.unsplash.com/photo-1583394831826-4e7a0e9f1b9e" },
-  { title: "Unstitched", image: "https://images.pexels.com/photos/3760915/pexels-photo-3760915.jpeg" },
-  { title: "3 Piece", image: "https://images.pexels.com/photos/1094130/pexels-photo-1094130.jpeg" },
-  { title: "2 Piece", image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf" },
-  { title: "1 Piece", image: "https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg" },
-  { title: "Lawn Collection", image: "https://images.pexels.com/photos/3760916/pexels-photo-3760916.jpeg" },
-  { title: "Khaddar Collection", image: "https://images.pexels.com/photos/3760917/pexels-photo-3760917.jpeg" },
-  { title: "Cotton Collection", image: "https://images.unsplash.com/photo-1583394831826-4e7a0e9f1b9e" },
-  { title: "Linen Collection", image: "https://images.pexels.com/photos/3760918/pexels-photo-3760918.jpeg" },
-  { title: "Silk Suits", image: "https://images.unsplash.com/photo-1618241264950-4e5e9e0b5e7a" },
-  { title: "Wash & Wear", image: "https://images.pexels.com/photos/1094131/pexels-photo-1094131.jpeg" },
-  { title: "Formal Wear", image: "https://images.unsplash.com/photo-1562572159-4efc207f5aff" },
-  { title: "Casual Wear", image: "https://images.unsplash.com/photo-1591369821896-68a5a83a9d87" },
-  { title: "Kids", image: "https://images.pexels.com/photos/36029/pexels-photo.jpg" },
-  { title: "New Arrivals", image: "https://images.unsplash.com/photo-1578683012567-4e40e8d8e6b0" },
-  { title: "Best Sellers", image: "https://images.pexels.com/photos/1094132/pexels-photo-1094132.jpeg" },
-  { title: "Accessories", image: "https://images.unsplash.com/photo-1518047601542-79f18c655718" },
+  { title: "Women", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80", count: 248 },
+  { title: "Men", image: "https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=400&q=80", count: 192 },
+  { title: "Kids", image: "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&q=80", count: 86 },
+  { title: "Dresses", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80", count: 134 },
+  { title: "Lawn Collection", image: "https://images.unsplash.com/photo-1551803091-e20673f15770?w=400&q=80", count: 64 },
+  { title: "Formal Wear", image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&q=80", count: 73 },
+  { title: "Casual Wear", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&q=80", count: 158 },
+  { title: "Accessories", image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400&q=80", count: 97 },
+  { title: "Footwear", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=80", count: 112 },
+  { title: "New Arrivals", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80", count: 45 },
 ];
 
 export default function CategorySection() {
   return (
-    <section className="py-7 px-4 w-full">
+    <section className="section-container">
       <Swiper
         modules={[Autoplay, Navigation]}
-        spaceBetween={10} // gap between slides
-        slidesPerView={2} // default (mobile)
+        spaceBetween={16}
+        slidesPerView={2}
         navigation
-        autoplay={{ delay: 2000, disableOnInteraction: false }}
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
         loop={true}
         breakpoints={{
-          640: { slidesPerView: 3 },
-          768: { slidesPerView: 4 },
+          480: { slidesPerView: 3 },
+          640: { slidesPerView: 4 },
+          768: { slidesPerView: 5 },
           1024: { slidesPerView: 6 },
           1280: { slidesPerView: 7 },
         }}
+        className="!py-4"
       >
         {categories.map((item, idx) => (
-          <SwiperSlide key={idx}>
+          <SwiperSlide key={idx} className="!flex justify-center">
             <CategoryCard {...item} />
           </SwiperSlide>
         ))}

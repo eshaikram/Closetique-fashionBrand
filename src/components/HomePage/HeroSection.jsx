@@ -103,20 +103,20 @@ const HeroSection = () => {
 
       {/* Bottom text */}
       <motion.div
-        className="text-center max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto"
+        className="text-center max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto pt-2 pb-2"
         variants={textVariants}
         initial="hidden"
         animate="visible"
       >
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-semibold text-gray-900">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-gray-900 leading-tight tracking-tight">
           <span className="italic">Harmonizing</span> Your Style <br />
           and <span className="italic">Craftsmanship</span>
         </h1>
-        <p className="mt-2 sm:mt-3 text-gray-600 text-sm sm:text-base">
+        <p className="mt-3 sm:mt-4 text-gray-700 text-sm sm:text-base max-w-xl mx-auto">
           Where Fashion Meets Craftsmanship — Uniting Impeccable Detailing with Your Unique Style
         </p>
         <motion.button
-          className="mt-4 sm:mt-6 bg-orange-400 hover:bg-orange-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition text-sm sm:text-base"
+          className="mt-5 sm:mt-7 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 sm:py-3 px-7 sm:px-9 rounded-full shadow-lg shadow-orange-600/25 transition text-sm sm:text-base"
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"

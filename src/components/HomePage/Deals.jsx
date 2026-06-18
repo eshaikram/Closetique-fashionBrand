@@ -1,16 +1,17 @@
 "use client";
 import React from "react";
 import ProductCard from "../ProductCard";
-import { ArrowRight } from "lucide-react";
+import SectionHeader from "./SectionHeader";
 
 const dealProducts = [
   {
     id: 1,
     title: "Luxury Cashmere Coat",
-    image: "https://images.unsplash.com/photo-1608063615781-e2ef1c33d1c9?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&q=80",
     price: 199.99,
     discount: 30,
     rating: 4.8,
+    badge: "Hot Deal",
   },
   {
     id: 2,
@@ -23,10 +24,11 @@ const dealProducts = [
   {
     id: 3,
     title: "Tailored Wool Suit",
-    image: "https://images.unsplash.com/photo-1593034509785-5b17ba49f683?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80",
     price: 249.99,
     discount: 40,
     rating: 4.9,
+    badge: "Hot Deal",
   },
   {
     id: 4,
@@ -40,33 +42,19 @@ const dealProducts = [
 
 export default function Deals() {
   return (
-    <section className="py-10 sm:py-16 ">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-            Exclusive Deals
-          </h2>
-          <a
-            href="/deals"
-            className="flex items-center text-red-600 font-semibold text-sm sm:text-base hover:text-red-700 transition-colors duration-200"
-          >
-            Grab Deals Now <ArrowRight className="ml-2 w-5 h-5" />
-          </a>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section className="py-8 sm:py-12">
+      <div className="section-container">
+        <SectionHeader
+          eyebrow="Save big"
+          title="Exclusive Deals"
+          subtitle="Premium pieces at unbeatable prices — while stocks last."
+          href="/products"
+          linkLabel="Grab Deals Now"
+          accent="red"
+        />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dealProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              title={product.title}
-              image={product.image}
-              price={product.price}
-              discount={product.discount}
-              rating={product.rating}
-            />
+            <ProductCard key={product.id} {...product} />
           ))}
         </div>
       </div>

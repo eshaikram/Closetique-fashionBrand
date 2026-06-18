@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
 import ProductCard from "../ProductCard";
-import { ArrowRight } from "lucide-react";
+import SectionHeader from "./SectionHeader";
 
-// Dummy placeholder images
 const featured = [
   {
     id: "1",
@@ -13,6 +12,7 @@ const featured = [
     price: 59.99,
     discount: 10,
     rating: 4.5,
+    badge: "Featured",
   },
   {
     id: "2",
@@ -31,12 +31,13 @@ const featured = [
     price: 45.0,
     discount: 15,
     rating: 4.7,
+    badge: "Featured",
   },
   {
     id: "4",
     title: "Unique Floral Skirt",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRj0yyvogEsOE5W6jTTbx5UBW2sz4D3ohJ0zEsPsbA1RT20uOGuHD7sqKeLWGunGHrLE_k&usqp=CAU",
+      "https://images.unsplash.com/photo-1551048632-24e444b48a3e?w=600&q=80",
     price: 39.99,
     discount: 5,
     rating: 4.4,
@@ -45,33 +46,19 @@ const featured = [
 
 export default function FeaturedSection() {
   return (
-    <section className="py-10 sm:py-16 ">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-            Featured Products
-          </h2>
-          <a
-            href="/products"
-            className="flex items-center text-purple-600 font-semibold text-sm sm:text-base hover:text-purple-700 transition-colors duration-200"
-          >
-            View All Products <ArrowRight className="ml-2 w-5 h-5" />
-          </a>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section className="py-8 sm:py-12">
+      <div className="section-container">
+        <SectionHeader
+          eyebrow="Handpicked for you"
+          title="Featured Products"
+          subtitle="Our curated edit of standout pieces this season."
+          href="/products"
+          linkLabel="View All Products"
+          accent="purple"
+        />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {featured.map((item) => (
-            <ProductCard
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              image={item.image}
-              price={item.price}
-              discount={item.discount}
-              rating={item.rating}
-            />
+            <ProductCard key={item.id} {...item} />
           ))}
         </div>
       </div>

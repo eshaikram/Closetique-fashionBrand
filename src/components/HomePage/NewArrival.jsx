@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import ProductCard from "../ProductCard";
-import { ArrowRight } from "lucide-react";
+import SectionHeader from "./SectionHeader";
 
 const newArrivalProducts = [
   {
@@ -11,6 +11,7 @@ const newArrivalProducts = [
     price: 89.99,
     discount: 10,
     rating: 4.6,
+    badge: "New",
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ const newArrivalProducts = [
     price: 59.99,
     discount: 15,
     rating: 4.4,
+    badge: "New",
   },
   {
     id: 3,
@@ -27,6 +29,7 @@ const newArrivalProducts = [
     price: 79.99,
     discount: 20,
     rating: 4.8,
+    badge: "New",
   },
   {
     id: 4,
@@ -35,38 +38,25 @@ const newArrivalProducts = [
     price: 49.99,
     discount: 0,
     rating: 4.5,
+    badge: "New",
   },
 ];
 
 export default function NewArrivals() {
   return (
-    <section className="py-10 sm:py-16 ">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-            New Arrivals
-          </h2>
-          <a
-            href="/shop"
-            className="flex items-center text-orange-600 font-semibold text-sm sm:text-base hover:text-orange-700 transition-colors duration-200"
-          >
-            View All <ArrowRight className="ml-2 w-5 h-5" />
-          </a>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section className="py-8 sm:py-12 bg-gray-50">
+      <div className="section-container">
+        <SectionHeader
+          eyebrow="Fresh in"
+          title="New Arrivals"
+          subtitle="The latest drops, added to the collection this week."
+          href="/products"
+          linkLabel="View All"
+          accent="orange"
+        />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {newArrivalProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              title={product.title}
-              image={product.image}
-              price={product.price}
-              discount={product.discount}
-              rating={product.rating}
-            />
+            <ProductCard key={product.id} {...product} />
           ))}
         </div>
       </div>
