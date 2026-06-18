@@ -9,9 +9,9 @@ import {
 import FilterButtons from './FilterButtons';
 import ActionButtons from './ActionButtons';
 
-export default function AdminTable({ title, columns, data, buttonLabel, filters = ['All', 'Men', 'Women', 'Unstitched 2-Piece', 'Unstitched 3-Piece', 'Thongs'], onButtonClick, onEdit, onDelete }) {
+export default function AdminTable({ title, columns, data = [], buttonLabel, filters = ['All', 'Men', 'Women', 'Unstitched 2-Piece', 'Unstitched 3-Piece', 'Thongs'], onButtonClick, onEdit, onDelete }) {
   const table = useReactTable({
-    data,
+    data: Array.isArray(data) ? data : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

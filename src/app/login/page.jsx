@@ -3,75 +3,53 @@
 
 import Link from 'next/link';
 import { Mail, Lock, LogIn } from 'lucide-react';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axiosInstance from '@/lib/axiosInstance';
-import Cookies from 'js-cookie';
 
-export default function Login() {
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-gray-500">
+          Loading…
+        </div>
+      }
+    >
+      <Login />
+    </Suspense>
+  );
+}
+
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    console.log('Sending login request:', { email });
     try {
       const response = await axiosInstance.post('/login', { email, password });
-      console.log('Login response:', response.data);
-      const { token, user } = response.data;
-      Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
-      Cookies.set('user', JSON.stringify(user), { expires: 7, secure: true, sameSite: 'Strict' });
+      const { user } = response.data;
+      const redirect = searchParams.get('redirect');
 
-      // Fetch user data to check isAdmin with retry
-      let retries = 3;
-      let userData = null;
-      while (retries > 0) {
-        try {
-          const userResponse = await fetch('/api/user', {
-            method: 'GET',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-          });
-          console.log('User fetch response status:', userResponse.status);
-          if (userResponse.ok) {
-            userData = await userResponse.json();
-            console.log('User data after login:', userData);
-            break;
-          } else {
-            console.error('Failed to fetch user data:', await userResponse.json());
-          }
-        } catch (fetchError) {
-          console.error('Error fetching user:', fetchError.message);
-        }
-        retries--;
-        if (retries > 0) {
-          console.log(`Retrying user fetch (${retries} attempts left)...`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
+      const target = redirect
+        ? redirect
+        : user?.isAdmin
+        ? '/admin/dashboard'
+        : '/';
 
-      if (userData) {
-        if (userData.isAdmin) {
-          console.log('Redirecting to admin dashboard');
-          router.push('/admin/dashboard');
-          router.refresh();
-        } else {
-          console.log('Redirecting to user dashboard');
-          router.push('/');
-          router.refresh();
-        }
-      } else {
-        setError('Failed to verify user status after multiple attempts');
-        setLoading(false);
-      }
+      router.push(target);
+      router.refresh();
     } catch (err) {
-      console.error('Client login error:', err.response?.data || err.message);
-      setError(err.response?.data?.message || 'Failed to log in');
+      const msg =
+        err.response?.data?.message || err.message || 'Failed to log in';
+      setError(msg);
       setLoading(false);
     }
   };

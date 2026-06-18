@@ -1,21 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import axiosInstance from "@/lib/axiosInstance";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // ✅ Load cart from backend
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const res = await axiosInstance.get("/cart");
-        if (res.data.success) {
-          setCartItems(res.data.cart);
-        }
+        if (res.data.success) setCartItems(res.data.cart);
       } catch (err) {
         console.error("Error fetching cart:", err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCart();
@@ -25,84 +27,53 @@ const CartPage = () => {
     .reduce((sum, item) => sum + item.price * item.quantity, 0)
     .toFixed(2);
 
-  // ✅ Update quantity
   const handleQuantityChange = async (id, color, newQuantity) => {
-  try {
-    const item = cartItems.find((i) => i.id === id && i.color === color);
-    const diff = parseInt(newQuantity) - item.quantity;
+    try {
+      const res = await axiosInstance.patch("/cart", {
+        action: "set-quantity",
+        id,
+        color,
+        quantity: parseInt(newQuantity, 10),
+      });
+      if (res.data.success) setCartItems(res.data.cart);
+    } catch (err) {
+      console.error("Error updating quantity:", err.message);
+    }
+  };
 
-    if (diff === 0) return;
-
-    await axiosInstance.post("/cart", {
-      id,
-      color,
-      title: item.title,
-      price: item.price,
-      image: item.image,
-      quantity: diff, // ✅ send only difference
-    });
-
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.color === color
-          ? { ...item, quantity: parseInt(newQuantity) }
-          : item
-      )
-    );
-  } catch (err) {
-    console.error("Error updating quantity:", err.message);
-  }
-};
-
-  // ✅ Change color
   const handleColorChange = async (id, oldColor, newColor) => {
     try {
-      // delete old
-      await axiosInstance.delete(`/cart`, {
-        params: { id, color: oldColor },
-      });
-
-      // add new
       const item = cartItems.find((i) => i.id === id && i.color === oldColor);
-      await axiosInstance.post("/cart", {
-        ...item,
-        color: newColor,
-      });
-
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === id && item.color === oldColor
-            ? { ...item, color: newColor }
-            : item
-        )
-      );
+      if (!item) return;
+      await axiosInstance.delete("/cart", { params: { id, color: oldColor } });
+      const res = await axiosInstance.post("/cart", { ...item, color: newColor });
+      if (res.data.success) setCartItems(res.data.cart);
     } catch (err) {
       console.error("Error changing color:", err.message);
     }
   };
 
-  // ✅ Delete one item
   const handleDelete = async (id, color) => {
     try {
-      await axiosInstance.delete("/cart", {
-        params: { id, color },
-      });
-      setCartItems((prevItems) =>
-        prevItems.filter((item) => !(item.id === id && item.color === color))
-      );
+      const res = await axiosInstance.delete("/cart", { params: { id, color } });
+      if (res.data.success) setCartItems(res.data.cart);
     } catch (err) {
       console.error("Error deleting item:", err.message);
     }
   };
 
-  // ✅ Clear all items
   const handleClearCart = async () => {
     try {
-      await axiosInstance.patch("/cart", { action: "clear" });
-      setCartItems([]);
+      const res = await axiosInstance.patch("/cart", { action: "clear" });
+      if (res.data.success) setCartItems([]);
     } catch (err) {
       console.error("Error clearing cart:", err.message);
     }
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) return;
+    router.push("/checkout");
   };
 
   return (
@@ -214,7 +185,11 @@ const CartPage = () => {
               placeholder="Enter promo code"
               className="w-full p-2 sm:p-3 mb-4 border border-orange-500 rounded-lg focus:ring-2 focus:ring-orange-500 placeholder-gray-400 transition-all duration-200 text-sm"
             />
-            <button className="w-full bg-orange-500 text-white py-2 sm:py-3 rounded-lg hover:bg-orange-600 transition-all duration-200 font-semibold text-sm sm:text-base">
+            <button
+              onClick={handleCheckout}
+              disabled={cartItems.length === 0}
+              className="w-full bg-orange-500 text-white py-2 sm:py-3 rounded-lg hover:bg-orange-600 transition-all duration-200 font-semibold text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Proceed to Checkout
             </button>
             <p className="text-center text-xs sm:text-sm mt-4">

@@ -1,12 +1,33 @@
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/db';
 
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+function requireAdmin(req) {
+  const token = req.cookies.get('token')?.value;
+  if (!token || !process.env.JWT_SECRET) return null;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded?.isAdmin ? decoded : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req) {
   try {
+    if (!requireAdmin(req)) {
+      return jsonResponse({ message: 'Unauthorized' }, 401);
+    }
     await dbConnect();
     const data = await req.json();
-    console.log('Incoming data:', data); // Debug log
 
     const product = new Product({
       title: data.title,
@@ -16,105 +37,69 @@ export async function POST(req) {
       productName: data.productName,
       category: data.category,
       brand: data.brand,
-      countInStock: parseInt(data.countInStock),
+      countInStock: parseInt(data.countInStock, 10),
       status: data.status || 'In Stock',
       discount: parseFloat(data.discount) || 0,
-      rating: { average: 0, count: 0 }, // Initialize rating
-      wishlist: [], // Initialize empty wishlist
-      images: data.images.filter(img => img !== null && img !== ''),
-      gender: data.category.includes('Ladies') ? 'women' : 'men',
+      rating: { average: 0, count: 0 },
+      wishlist: [],
+      images: (data.images || []).filter((img) => img !== null && img !== ''),
+      gender: (data.category || '').includes('Ladies') ? 'women' : 'men',
     });
 
     await product.save();
-    console.log('Saved product:', product); // Debug log
-    return new Response(JSON.stringify({
-      message: 'Product added successfully',
-      product
-    }), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse({ message: 'Product added successfully', product }, 201);
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({
-      message: 'Error adding product',
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.error('Products POST error:', error);
+    return jsonResponse(
+      { message: 'Error adding product', error: error.message },
+      500
+    );
   }
 }
 
 export async function GET(req) {
   try {
-    console.time("⏱ MongoDB Fetch Time");
     await dbConnect();
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
 
     let query = {};
     if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-      query = { wishlist: userId }; // Filter products in user's wishlist
+      query = { wishlist: userId };
     }
 
     const products = await Product.find(query).sort({ createdAt: -1 });
-    console.timeEnd("⏱ MongoDB Fetch Time");
-    return new Response(JSON.stringify(products), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse(products);
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({
-      message: 'Error fetching products',
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.error('Products GET error:', error);
+    return jsonResponse(
+      { message: 'Error fetching products', error: error.message },
+      500
+    );
   }
 }
 
 export async function DELETE(req) {
   try {
+    if (!requireAdmin(req)) {
+      return jsonResponse({ message: 'Unauthorized' }, 401);
+    }
     await dbConnect();
     const { id } = await req.json();
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return new Response(JSON.stringify({
-        message: 'Valid product ID is required'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return jsonResponse({ message: 'Valid product ID is required' }, 400);
     }
 
     const product = await Product.findByIdAndDelete(id);
+    if (!product) return jsonResponse({ message: 'Product not found' }, 404);
 
-    if (!product) {
-      return new Response(JSON.stringify({
-        message: 'Product not found'
-      }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    return new Response(JSON.stringify({
-      message: 'Product deleted successfully'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse({ message: 'Product deleted successfully' });
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({
-      message: 'Error deleting product',
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.error('Products DELETE error:', error);
+    return jsonResponse(
+      { message: 'Error deleting product', error: error.message },
+      500
+    );
   }
 }
