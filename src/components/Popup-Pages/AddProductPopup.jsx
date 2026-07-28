@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axiosInstance from "@/lib/axiosInstance";
-import { CldUploadButton } from "next-cloudinary";
+import { CldUploadButton, CldImage } from "next-cloudinary";
 
 const AddProductPopup = ({ onClose, onProductAdded }) => {
   const [title, setTitle] = useState("");
@@ -169,8 +169,13 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
                   </CldUploadButton>
                   {images.map((img, index) => (
                     <div key={index} className="relative group">
-                      <img
+                      <CldImage
                         src={img}
+                        width={96}
+                        height={96}
+                        crop="fill"
+                        format="webp"
+                        quality="auto"
                         alt={`Product ${index + 1}`}
                         className="w-24 h-24 object-cover rounded-lg shadow-md transition-transform duration-200 group-hover:scale-105"
                       />
@@ -246,8 +251,13 @@ const AddProductPopup = ({ onClose, onProductAdded }) => {
               <div className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 p-6 rounded-xl shadow-lg text-center">
                 <div className="relative w-full h-72 bg-gray-100 rounded-lg mb-4 overflow-hidden group">
                   {images[currentImageIndex] ? (
-                    <img
+                    <CldImage
                       src={images[currentImageIndex]}
+                      width={500}
+                      height={500}
+                      crop="fill"
+                      format="webp"
+                      quality="auto"
                       alt="Preview"
                       className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                     />

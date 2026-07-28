@@ -7,17 +7,13 @@ const HeroSection = () => {
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    hover: { scale: 1.02, boxShadow: "0px 8px 24px rgba(0,0,0,0.15)" },
   };
 
   // Animation variants for text section
   const textVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.3 } },
-  };
-
-  // Hover animation for cards
-  const hoverCard = {
-    hover: { scale: 1.02, boxShadow: "0px 8px 24px rgba(0,0,0,0.15)" },
   };
 
   // Button animation
@@ -37,7 +33,6 @@ const HeroSection = () => {
           initial="hidden"
           animate="visible"
           whileHover="hover"
-          {...hoverCard}
         >
           <img
             src="/images/image1.png"
@@ -59,7 +54,6 @@ const HeroSection = () => {
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            {...hoverCard}
           >
             <img
               src="/images/image5.png"
@@ -75,7 +69,6 @@ const HeroSection = () => {
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            {...hoverCard}
           >
             <h3 className="text-sm sm:text-lg font-semibold text-gray-800">
               Comprehensive Guide To The World Of Fashion
@@ -91,7 +84,6 @@ const HeroSection = () => {
           initial="hidden"
           animate="visible"
           whileHover="hover"
-          {...hoverCard}
         >
           <img
             src="/images/men2.png"

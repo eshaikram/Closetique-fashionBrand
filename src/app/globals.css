@@ -16,17 +16,17 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #ea6a0a;
   border-radius: 10px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #b0b0b0;
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #888;
+  background: #ffffff;
 }
 
 body {
@@ -156,6 +156,9 @@ body {
   .pagination-controls {
     justify-content: space-between;
   }
+}
+button{
+  cursor:pointer;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -307,4 +310,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Sidebar transparency overrides */
+[data-slot="sidebar-inner"] {
+  background: transparent !important;
 }

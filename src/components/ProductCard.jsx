@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Star, Heart, ShoppingBag, Check } from "lucide-react";
+import { CldImage } from "next-cloudinary";
 import { useWishlist } from "@/lib/WishlistContext";
 import { useCart } from "@/lib/CartContext";
 
@@ -86,16 +87,20 @@ export default function ProductCard({
         </button>
 
         {/* Image */}
-        <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+        <div className="relative w-full aspect-[5/6] overflow-hidden bg-gray-100">
           {imgError ? (
             <div className="w-full h-full grid place-items-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 text-sm">
               Image unavailable
             </div>
           ) : (
-            <img
+            <CldImage
               src={image}
               alt={title}
-              loading="lazy"
+              width={400}
+              height={500}
+              crop="fill"
+              format="webp"
+              quality="auto"
               onError={() => setImgError(true)}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -125,7 +130,7 @@ export default function ProductCard({
         </div>
 
         {/* Details */}
-        <div className="flex flex-col flex-1 p-4 gap-2">
+        <div className="flex flex-col flex-1 p-3 gap-1.5">
           <h3 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
             {title}
           </h3>

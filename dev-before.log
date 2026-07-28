@@ -1,0 +1,36 @@
+﻿
+> online-store@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.7:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 20.7s (2971 modules)
+ GET / 200 in 6312ms
+Configured baseURL: http://localhost:3000/api
+ GET / 200 in 235ms
+ GET / 200 in 352ms
+ ○ Compiling /api/user ...
+ ✓ Compiled /api/cart in 4.9s (2987 modules)
+GET /api/user called
+Token received: No token
+No token provided
+ GET /api/user 401 in 5661ms
+GET /api/user called
+Token received: No token
+No token provided
+ GET /api/user 401 in 113ms
+ GET / 200 in 884ms
+ GET /api/products 200 in 8115ms
+ ○ Compiling /_not-found ...
+ GET /api/cart 200 in 9328ms
+ ✓ Compiled /_not-found in 1362ms (2991 modules)
+Configured baseURL: http://localhost:3000/api
+ GET /products/unknown/ztqyjbugpr4abaqfujba 404 in 2003ms
+ ✓ Compiled in 555ms (1065 modules)
+[?25h

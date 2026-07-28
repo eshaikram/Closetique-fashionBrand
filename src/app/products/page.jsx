@@ -7,11 +7,12 @@ import ProductCard from "@/components/ProductCard";
 import { CATEGORIES, toSlug, fromSlug } from "@/lib/categories";
 import axiosInstance from "@/lib/axiosInstance";
 
+
 function CardSkeleton() {
   return (
     <div className="rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="aspect-[4/5] bg-gray-200 animate-pulse" />
-      <div className="p-4 space-y-3">
+      <div className="aspect-[5/6] bg-gray-200 animate-pulse" />
+      <div className="p-3 space-y-2">
         <div className="h-4 bg-gray-200 rounded animate-pulse" />
         <div className="h-3 w-2/3 bg-gray-200 rounded animate-pulse" />
         <div className="h-5 w-1/3 bg-gray-200 rounded animate-pulse" />

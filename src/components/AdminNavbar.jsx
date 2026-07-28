@@ -12,6 +12,7 @@ const pageTitles = {
   "/admin/products": "Products",
   "/admin/orders": "Orders",
   "/admin/settings": "Settings",
+  "/admin/profile": "Profile",
 };
 
 export default function AdminNavbar() {
@@ -30,8 +31,8 @@ function NavbarContent() {
 
   return (
     <div
-      className={`h-16 flex items-center justify-between px-6 bg-gray-100 shadow-sm transition-all duration-300 md:${
-        open ? 'ml-64' : 'ml-0'
+      className={`h-16 flex items-center justify-between px-6 bg-gray-100 shadow-sm transition-all duration-300 ${
+        open ? 'md:ml-72' : 'md:ml-[70px]'
       }`}
     >
       <div className="flex items-center gap-4">
